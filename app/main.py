@@ -34,10 +34,11 @@ async def predict_data_from_csv(file: UploadFile):
 
         if not('Id' in df.columns and len(df.columns) == 14):
             raise HTTPException(status_code=400, detail="Incorrect data")
-        predict_df = df.drop('Id', axis=1)
+        predict_df = df.drop('Id', axis=1).replace([np.inf, -np.inf], np.nan).dropna()
         result = {'data':[]}
         for index, data in zip(df['Id'].values, prediction.predict_proba(predict_df)):
-            result['data'].append( {'id': str(index), 'predict':  data})
+            result['data'].append({'id': str(index), 'predict':  data})
+            print(f'Added {result["data"][len(result["data"])-1]["id"]}: {result["data"][len(result["data"])-1]["predict"]}')
 
         # Отправляем JSON-ответ
 
