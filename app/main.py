@@ -1,4 +1,5 @@
 import asyncio
+import os
 import time
 from io import StringIO
 from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
@@ -14,7 +15,6 @@ from app.base_classes.base_predict_models import Response, Message,Status
 from app.config.ConfigFileLoader import ConfigFileLoader
 from app.model.model_education import ModelEducator
 from app.model.model_predictor import ModelPredictor
-
 
 config = ConfigFileLoader.load_from_file()
 app = FastAPI()
@@ -79,7 +79,6 @@ async def create_upload_file(file: UploadFile, background_tasks: BackgroundTasks
         df = pd.read_csv(StringIO(contents.decode('utf-8')))
         if not('Id' in df.columns and len(df.columns) == 14):
             raise HTTPException(status_code=400, detail="Incorrect data")
-        # Start the asynchronous function in the background without waiting for the result
         background_tasks.add_task(train_and_send_metrics,df)
         # Отправляем JSON-ответ
         return JSONResponse(content={"status": "OK"})

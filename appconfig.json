@@ -1,6 +1,6 @@
 {
   "api_url": "http://localhost:38080/api/trainings",
-  "file_path": "app\\model_files\\base.pkl",
+  "file_path": "model_files\\base.pkl",
   "best_setup": {
     "criterion": "friedman_mse",
     "learning_rate": 0.01,

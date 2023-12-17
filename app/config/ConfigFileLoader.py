@@ -14,7 +14,7 @@ class ConfigFileLoader(Config):
         else:
             best = {'criterion': 'friedman_mse', 'learning_rate': 0.01, 'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 10, 'n_estimators': 90, 'subsample': 0.01}
             # Создание файла с стандартными значениями, если файла нет
-            default_config = cls(api_url="http://localhost:38080/api/trainings", file_path="app\\model_files\\base.pkl",best_setup = best)
+            default_config = cls(api_url="http://localhost:38080/api/trainings", file_path=os.path.join(*['app', 'model_files', 'base.pkl']),best_setup = best)
             default_config.save_to_file(file_name)
             return default_config
 
