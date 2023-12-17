@@ -17,5 +17,5 @@ requests>=2.31.0
 ~~~
 docker-compose up
 ~~~
-####Красивая картинка .jpg
-![Текст описания]([https://www.example.com/image.jpg](https://images.wallpaperscraft.ru/image/single/kotiata_koty_pushistye_99165_1920x1080.jpg)https://images.wallpaperscraft.ru/image/single/kotiata_koty_pushistye_99165_1920x1080.jpg)
+#### Красивая картинка .jpg
+![Красивая картинка .jpg](https://images.wallpaperscraft.ru/image/single/kotiata_koty_pushistye_99165_1920x1080.jpg)
