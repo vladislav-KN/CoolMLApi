@@ -30,8 +30,11 @@ educator = ModelEducator(config.file_path)
 async def predict_data_from_csv(file: UploadFile):
     if file.filename.endswith(".csv"):
         contents = await file.read()
-        df = pd.read_csv(StringIO(contents.decode('utf-8')))
-
+        try:
+            df = pd.read_csv(StringIO(contents.decode('utf-8')))
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise HTTPException(status_code=400, detail="Only UTF-8 encoding ")
         if not('Id' in df.columns and len(df.columns) == 14):
             raise HTTPException(status_code=400, detail="Incorrect data")
         predict_df = df.drop('Id', axis=1).replace([np.inf, -np.inf], np.nan).dropna()
@@ -59,7 +62,7 @@ async def train_and_send_metrics(df:pd.DataFrame):
     # Затем разделите временный набор на тестовый и валидационный наборы (по 50% от временного набора)
     X_test, X_validation, y_test, y_validation = train_test_split(X_temp, y_temp, test_size=0.5)
     # Обучение модели
-    await educator.retrain(X_train,y_train)
+    await educator.train(X_train,y_train, config.best_setup)
     result = educator.compute_metrics(X_test,y_test)
     csv_data = df.to_csv(index=False)
     metrics_url = (f"{config.api_url}?Accuracy={result['Accuracy']}"
@@ -74,11 +77,15 @@ async def train_and_send_metrics(df:pd.DataFrame):
     print("Metrics Response Content:", response.text)
 
 @app.post("/educate_model/", response_model=Status,responses={400: {"model": Message}})
-async def create_upload_file(file: UploadFile, background_tasks: BackgroundTasks):
+async def Educate_model(file: UploadFile, background_tasks: BackgroundTasks):
     if file.filename.endswith(".csv"):
         contents = await file.read()
-        df = pd.read_csv(StringIO(contents.decode('utf-8')))
-        if not('Id' in df.columns and len(df.columns) == 14):
+        try:
+            df = pd.read_csv(StringIO(contents.decode('utf-8')))
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            raise HTTPException(status_code=400, detail="Only UTF-8 encoding ")
+        if not('Id' in df.columns and 'res' in df.columns and len(df.columns) == 15):
             raise HTTPException(status_code=400, detail="Incorrect data")
         background_tasks.add_task(train_and_send_metrics,df)
         # Отправляем JSON-ответ

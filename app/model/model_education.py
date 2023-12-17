@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, recall_score, f1_score, mean_squared_error, r2_score, roc_auc_score, \
@@ -11,14 +12,13 @@ class ModelEducator(Model):
     def __init__(self, model_path=None):
         super().__init__(model_path)
 
-    async def train(self, X_train, y_train, settings: dict):
+    async def train(self, X_train, y_train, settings: dict, save_to_file = os.path.join(*['app', 'model_files', 'new.pkl'])):
         loop = asyncio.get_event_loop()
-        model = GradientBoostingClassifier(**settings)
+        self.model = GradientBoostingClassifier(**settings)
         await loop.run_in_executor(None, self.model.fit, X_train, y_train)
+        self.save_model(save_to_file)
 
-    async def retrain(self, X_train, y_train):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.model.partial_fit, X_train, y_train)
+
 
     def compute_metrics(self, X, y_true):
         accuracy, recall, f1, mse, r2, auc_roc, log_loss_value = 0, 0, 0, 0, 0, 0, 0
